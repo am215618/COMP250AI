@@ -1,15 +1,17 @@
-# Artifact
+# An AI for solving a sliding puzzle independently
+
+## Artifact
 
 ### Reflection
-why am i doing this
+Coming soon...
 
-# Research
+## Research
 
 ### Defence of Arguements
-can i
+Coming soon...
 
 ### Appropriateness of Practice-Based Research Methods
-insert some text here
+Coming soon...
 
 ### Application of Academic Conventions
-insert some more text here
+Coming soon...
