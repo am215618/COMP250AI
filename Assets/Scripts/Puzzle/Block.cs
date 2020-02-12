@@ -15,7 +15,7 @@ public class Block : MonoBehaviour
         this.startingCoord = startingCoord;
         coord = startingCoord;
 
-        GetComponent<MeshRenderer>().material.shader = Resources.Load<Shader>("Block");
+        GetComponent<MeshRenderer>().material.shader = Shader.Find("Unlit/Texture"); //Resources.Load<Shader>("Block");
         GetComponent<MeshRenderer>().material.mainTexture = image;
     }
 

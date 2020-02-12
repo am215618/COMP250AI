@@ -25,7 +25,7 @@ public class Puzzle : MonoBehaviour
         CreatePuzzle();
     }
 
-    private void Update()
+    void Update()
     {
         if (state == PuzzleState.Solved && Input.GetKeyDown(KeyCode.Space))
         {
@@ -129,17 +129,17 @@ public class Puzzle : MonoBehaviour
 
     void MakeNextShuffleMove()
     {
-        Vector2Int[] offsets = { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1), };
+        Vector2Int[] offsets = { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1) };
         int randomIndex = Random.Range(0, offsets.Length);
 
         for (int i = 0; i < offsets.Length; i++)
         {
-            Vector2Int offset = offsets[(randomIndex+i) % offsets.Length];
+            Vector2Int offset = offsets[(randomIndex + i) % offsets.Length];
             if(offset !=previousShuffleOffset * -1)
             {
                 Vector2Int moveBlockCoord = emptyBlock.coord + offset;
 
-                if (moveBlockCoord.x >= 0 && moveBlockCoord.x < blocksPerLine && moveBlockCoord.y >= 0 && moveBlockCoord.x >= blocksPerLine)
+                if (moveBlockCoord.x >= 0 && moveBlockCoord.x < blocksPerLine && moveBlockCoord.y >= 0 && moveBlockCoord.y < blocksPerLine)
                 {
                     MoveBlock(blocks[moveBlockCoord.x, moveBlockCoord.y], shuffleMoveDuration);
                     shuffleMovesRemaining--;
