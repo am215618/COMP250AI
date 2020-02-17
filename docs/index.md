@@ -1,17 +1,29 @@
+---
+title: Help
+---
+
+hello
+====
+
+**You are here**
 # An AI for solving a sliding puzzle independently
 
 ## Artifact
 
 ### Reflection
-Coming soon...
+how the project went
 
 ## Research
 
 ### Defence of Arguements
-Coming soon...
+
+Methods chosen to solve it (A-Star)
+Comparison
+alternatives
 
 ### Appropriateness of Practice-Based Research Methods
 Coming soon...
 
 ### Application of Academic Conventions
 Coming soon...
+
