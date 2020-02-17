@@ -1,11 +1,7 @@
 ---
-title: Help
+title: Intro
 ---
 
-hello
-====
-
-**You are here**
 # An AI for solving a sliding puzzle independently
 
 ## Artifact
@@ -19,6 +15,11 @@ how the project went
 
 Methods chosen to solve it (A-Star)
 Comparison
+
+A* will always find the shortest route to the goal.
+
+A* does have a complexity problem.
+
 alternatives
 
 ### Appropriateness of Practice-Based Research Methods
