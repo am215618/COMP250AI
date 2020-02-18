@@ -10,6 +10,9 @@ public class Block : MonoBehaviour
     public Vector2Int coord;
     Vector2Int startingCoord;
 
+    public int id;
+    Solver solver;
+
     public void Init(Vector2Int startingCoord, Texture2D image)
     {
         this.startingCoord = startingCoord;

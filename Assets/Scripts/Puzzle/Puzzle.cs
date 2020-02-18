@@ -10,7 +10,9 @@ public class Puzzle : MonoBehaviour
     public float defaultMoveDuration = .2f;
     public float shuffleMoveDuration = .1f;
 
-    enum PuzzleState { Solved, Shuffling, InPlay};
+    public TimerScript timer;
+
+    enum PuzzleState { Solved, Shuffling, InPlay, Solving };
     PuzzleState state;
 
     Block emptyBlock;
@@ -19,8 +21,11 @@ public class Puzzle : MonoBehaviour
     bool blockIsMoving;
     int shuffleMovesRemaining;
     Vector2Int previousShuffleOffset;
+    int i;
 
-    void Start()
+    //public Solver solver;
+
+    void Awake()
     {
         CreatePuzzle();
     }
@@ -35,8 +40,10 @@ public class Puzzle : MonoBehaviour
 
     void CreatePuzzle()
     {
+        i = (blocksPerLine * blocksPerLine) - (blocksPerLine - 1);
         blocks = new Block[blocksPerLine, blocksPerLine];
         Texture2D[,] imageSlices = ImageSlicer.GetSlices(image, blocksPerLine);
+        //solver.initialPos = new Vector2Int[(blocksPerLine * blocksPerLine)];
         for (int y = 0; y < blocksPerLine; y++)
         {
             for (int x = 0; x < blocksPerLine; x++)
@@ -49,12 +56,21 @@ public class Puzzle : MonoBehaviour
                 block.OnBlockPressed += PlayerMoveBlockInput;
                 block.OnFinishedMoving += OnBlockFinishedMoving;
                 block.Init(new Vector2Int(x, y), imageSlices[x, y]);
+                block.id = i;
                 blocks[x, y] = block;
+                if (isDivisible(i, blocksPerLine))
+                {
+                    i = i - (blocksPerLine * 2);
+                }
+                i++;
 
-                if(y == 0 && x == blocksPerLine - 1)
+                if (y == 0 && x == blocksPerLine - 1)
                 {
                     emptyBlock = block;
+                    block.id = 0;
                 }
+                //solver.initialPos[block.id] = blocks
+                
             }
         }
 
@@ -64,8 +80,9 @@ public class Puzzle : MonoBehaviour
 
     void PlayerMoveBlockInput(Block blockToMove)
     {
-        if (state == PuzzleState.InPlay)
+        if (state == PuzzleState.InPlay || state != PuzzleState.Solving)
         {
+            timer.hasStarted = true;
             inputs.Enqueue(blockToMove);
             MakeNextPlayerMove();
         }
@@ -119,7 +136,7 @@ public class Puzzle : MonoBehaviour
         }
     }
 
-    void StartShuffle()
+    public void StartShuffle()
     {
         state = PuzzleState.Shuffling;
         shuffleMovesRemaining = shuffleLength;
@@ -161,6 +178,13 @@ public class Puzzle : MonoBehaviour
         }
 
         state = PuzzleState.Solved;
+        timer.hasStarted = false;
+        timer.ResetTimer();
         emptyBlock.gameObject.SetActive(true);
+    }
+
+    public bool isDivisible(int n, int m)
+    {
+        return (n % m) == 0;
     }
 }

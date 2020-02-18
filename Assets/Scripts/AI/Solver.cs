@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class Solver : MonoBehaviour
 {
+    int[] fx; //sum of gx and hx
+    int gx = 0; //distance from root node
+    int[] hx; //number of misplaced tiles
+    public Vector2Int[] initialPos;
+    public Vector2Int[] currentPos;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -14,5 +20,10 @@ public class Solver : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void AStar()
+    {
+
     }
 }
