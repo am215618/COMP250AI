@@ -12,8 +12,8 @@ public class Puzzle : MonoBehaviour
 
     public TimerScript timer;
 
-    enum PuzzleState { Solved, Shuffling, InPlay, Solving };
-    PuzzleState state;
+    public enum PuzzleState { Solved, Shuffling, InPlay, Solving };
+    public PuzzleState state;
 
     Block emptyBlock;
     Block[,] blocks;
@@ -23,7 +23,10 @@ public class Puzzle : MonoBehaviour
     Vector2Int previousShuffleOffset;
     int i;
 
-    //public Solver solver;
+    public Solver solver;
+
+    GameObject blockObject;
+    Block block;
 
     void Awake()
     {
@@ -43,16 +46,17 @@ public class Puzzle : MonoBehaviour
         i = (blocksPerLine * blocksPerLine) - (blocksPerLine - 1);
         blocks = new Block[blocksPerLine, blocksPerLine];
         Texture2D[,] imageSlices = ImageSlicer.GetSlices(image, blocksPerLine);
-        //solver.initialPos = new Vector2Int[(blocksPerLine * blocksPerLine)];
+        solver.initialPos = new Vector2Int[(blocksPerLine * blocksPerLine)];
+        solver.currentPos = new Vector2Int[(blocksPerLine * blocksPerLine)];
         for (int y = 0; y < blocksPerLine; y++)
         {
             for (int x = 0; x < blocksPerLine; x++)
             {
-                GameObject blockObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                blockObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
                 blockObject.transform.position = -Vector2.one * (blocksPerLine - 1) * .5f + new Vector2(x, y);
                 blockObject.transform.parent = transform;
 
-                Block block = blockObject.AddComponent<Block>();
+                block = blockObject.AddComponent<Block>();
                 block.OnBlockPressed += PlayerMoveBlockInput;
                 block.OnFinishedMoving += OnBlockFinishedMoving;
                 block.Init(new Vector2Int(x, y), imageSlices[x, y]);
@@ -69,8 +73,8 @@ public class Puzzle : MonoBehaviour
                     emptyBlock = block;
                     block.id = 0;
                 }
-                //solver.initialPos[block.id] = blocks
-                
+                solver.initialPos[block.id] = block.coord;
+                solver.currentPos[block.id] = block.coord;
             }
         }
 
@@ -80,7 +84,7 @@ public class Puzzle : MonoBehaviour
 
     void PlayerMoveBlockInput(Block blockToMove)
     {
-        if (state == PuzzleState.InPlay || state != PuzzleState.Solving)
+        if (state == PuzzleState.InPlay)
         {
             timer.hasStarted = true;
             inputs.Enqueue(blockToMove);
@@ -105,7 +109,9 @@ public class Puzzle : MonoBehaviour
 
             Vector2Int targetCoord = emptyBlock.coord;
             emptyBlock.coord = blockToMove.coord;
+            solver.currentPos[emptyBlock.id] = blockToMove.coord;
             blockToMove.coord = targetCoord;
+            solver.currentPos[blockToMove.id] = targetCoord;
 
             Vector2 targetPosition = emptyBlock.transform.position;
             emptyBlock.transform.position = blockToMove.transform.position;
@@ -131,7 +137,9 @@ public class Puzzle : MonoBehaviour
             }
             else
             {
+                solver.currentPos[block.id] = block.coord;
                 state = PuzzleState.InPlay;
+                solver.Shuffled();
             }
         }
     }
