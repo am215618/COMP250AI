@@ -7,12 +7,15 @@ public class Solver : MonoBehaviour
     int[] fx; //sum of gx and hx
     int gx = 0; //distance from root node
     int[] hx; //number of misplaced tiles
+    //fx = gx + hx
 
     [SerializeField]
     int initialHx = 0; //initial number of misplaced tiles.
 
     public Vector2Int[] initialPos;
     public Vector2Int[] currentPos;
+    //history of moves, position class.
+    int[] piecesMoved;
     public Puzzle puzzle;
 
     public void Shuffled()
@@ -33,6 +36,7 @@ public class Solver : MonoBehaviour
         get the lowest one
         move that particular piece (the one with lowest fx)
         repeat
+        if hx = 0, then solved.
         */
     }
 }

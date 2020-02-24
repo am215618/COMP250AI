@@ -12,6 +12,8 @@ public class Puzzle : MonoBehaviour
 
     public TimerScript timer;
 
+    [SerializeField]
+    int PossibleMoves;
     public enum PuzzleState { Solved, Shuffling, InPlay, Solving };
     public PuzzleState state;
 
@@ -102,6 +104,18 @@ public class Puzzle : MonoBehaviour
 
     void MoveBlock(Block blockToMove, float duration)
     {
+        /*check to see how many possible moves there are.
+        basically, if there are no pieces next to it, then add one to the possible move count
+        then create an fx/hx array with that many moves.
+         */
+        for (int j = 0; j < 4; j++)
+        {
+            if((blockToMove.coord - emptyBlock.coord).sqrMagnitude == 1)
+            {
+                PossibleMoves++;
+            }
+        }
+
         if ((blockToMove.coord - emptyBlock.coord).sqrMagnitude == 1)
         {
             blocks[blockToMove.coord.x, blockToMove.coord.y] = emptyBlock;
@@ -122,6 +136,7 @@ public class Puzzle : MonoBehaviour
 
     void OnBlockFinishedMoving()
     {
+        //add the block id to the history of pieces moved.
         blockIsMoving = false;
         CheckIfSolved();
 
