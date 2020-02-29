@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,14 +10,21 @@ public class Solver : MonoBehaviour
     int[] hx; //number of misplaced tiles
     //fx = gx + hx
 
+    bool isSolving = false;
+
     [SerializeField]
     int initialHx = 0; //initial number of misplaced tiles.
 
     public Vector2Int[] initialPos;
     public Vector2Int[] currentPos;
     //history of moves, position class.
-    int[] piecesMoved;
+    public List<int> piecesMoved;
     public Puzzle puzzle;
+
+    void Start()
+    {
+        List<int> piecesMoved = new List<int>();
+    }
 
     public void Shuffled()
     {
@@ -29,8 +37,17 @@ public class Solver : MonoBehaviour
         }
     }
 
+    public void CreateArrays(int nextToEmptyBlock)
+    {
+        int[] fx = new int[nextToEmptyBlock];
+        int[] hx = new int[nextToEmptyBlock];
+
+
+    }
+
     public void AStar()
     {
+
         /*calculate the different outcomes' hx
         add that to gx
         get the lowest one

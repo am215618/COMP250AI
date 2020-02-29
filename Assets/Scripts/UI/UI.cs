@@ -8,6 +8,9 @@ public class UI : MonoBehaviour
 
     public void Shuffle()
     {
-        puzzleScript.StartShuffle();
+        if(puzzleScript.state == Puzzle.PuzzleState.Solved)
+        {
+            puzzleScript.StartShuffle();
+        }
     }
 }

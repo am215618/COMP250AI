@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,7 +24,8 @@ public class Puzzle : MonoBehaviour
     bool blockIsMoving;
     int shuffleMovesRemaining;
     Vector2Int previousShuffleOffset;
-    int i;
+    int id;
+    int nrEmptyBlocks = 0;
 
     public Solver solver;
 
@@ -45,7 +47,7 @@ public class Puzzle : MonoBehaviour
 
     void CreatePuzzle()
     {
-        i = (blocksPerLine * blocksPerLine) - (blocksPerLine - 1);
+        id = (blocksPerLine * blocksPerLine) - (blocksPerLine - 1);
         blocks = new Block[blocksPerLine, blocksPerLine];
         Texture2D[,] imageSlices = ImageSlicer.GetSlices(image, blocksPerLine);
         solver.initialPos = new Vector2Int[(blocksPerLine * blocksPerLine)];
@@ -62,13 +64,13 @@ public class Puzzle : MonoBehaviour
                 block.OnBlockPressed += PlayerMoveBlockInput;
                 block.OnFinishedMoving += OnBlockFinishedMoving;
                 block.Init(new Vector2Int(x, y), imageSlices[x, y]);
-                block.id = i;
+                block.id = id;
                 blocks[x, y] = block;
-                if (isDivisible(i, blocksPerLine))
+                if (isDivisible(id, blocksPerLine))
                 {
-                    i = i - (blocksPerLine * 2);
+                    id = id - (blocksPerLine * 2);
                 }
-                i++;
+                id++;
 
                 if (y == 0 && x == blocksPerLine - 1)
                 {
@@ -102,19 +104,58 @@ public class Puzzle : MonoBehaviour
         }
     }
 
+    void CheckSurroundingBlock()
+    {
+        for (int j = 0; j < solver.initialPos.Length; j++)
+        {
+            if ((block.coord - emptyBlock.coord).sqrMagnitude == 1)
+            {
+                nrEmptyBlocks++;
+            }
+        }
+
+        solver.CreateArrays(nrEmptyBlocks);
+        Debug.LogWarning(nrEmptyBlocks);
+    }
+
+    void MakeNextSolveMove(int blockMoveIndex)
+    {
+        Vector2Int[] offsets = { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1) };
+
+        for (int i = 0; i < offsets.Length; i++)
+        {
+            Vector2Int offset = offsets[(blockMoveIndex + i) % offsets.Length];
+            if (offset != previousShuffleOffset * -1)
+            {
+                Vector2Int moveBlockCoord = emptyBlock.coord + offset;
+
+                if (moveBlockCoord.x >= 0 && moveBlockCoord.x < blocksPerLine && moveBlockCoord.y >= 0 && moveBlockCoord.y < blocksPerLine)
+                {
+                    MoveBlock(blocks[moveBlockCoord.x, moveBlockCoord.y], shuffleMoveDuration);
+                    previousShuffleOffset = offset;
+                    break;
+                }
+            }
+        }
+    }
+
     void MoveBlock(Block blockToMove, float duration)
     {
         /*check to see how many possible moves there are.
         basically, if there are no pieces next to it, then add one to the possible move count
         then create an fx/hx array with that many moves.
-         */
+        */
+        nrEmptyBlocks = 0;
+
         for (int j = 0; j < 4; j++)
         {
-            if((blockToMove.coord - emptyBlock.coord).sqrMagnitude == 1)
+            if ((blockToMove.coord - emptyBlock.coord).sqrMagnitude == 1)
             {
-                PossibleMoves++;
+                nrEmptyBlocks++;
             }
         }
+
+        Debug.LogWarning(nrEmptyBlocks);
 
         if ((blockToMove.coord - emptyBlock.coord).sqrMagnitude == 1)
         {
@@ -131,6 +172,10 @@ public class Puzzle : MonoBehaviour
             emptyBlock.transform.position = blockToMove.transform.position;
             blockToMove.MoveToPosition(targetPosition, duration);
             blockIsMoving = true;
+            if (state == PuzzleState.InPlay)
+            {
+                solver.piecesMoved.Add(blockToMove.id);
+            }
         }
     }
 
@@ -155,6 +200,7 @@ public class Puzzle : MonoBehaviour
                 solver.currentPos[block.id] = block.coord;
                 state = PuzzleState.InPlay;
                 solver.Shuffled();
+                CheckSurroundingBlock();
             }
         }
     }
@@ -170,12 +216,12 @@ public class Puzzle : MonoBehaviour
     void MakeNextShuffleMove()
     {
         Vector2Int[] offsets = { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1) };
-        int randomIndex = Random.Range(0, offsets.Length);
+        int randomIndex = UnityEngine.Random.Range(0, offsets.Length);
 
         for (int i = 0; i < offsets.Length; i++)
         {
             Vector2Int offset = offsets[(randomIndex + i) % offsets.Length];
-            if(offset !=previousShuffleOffset * -1)
+            if(offset != previousShuffleOffset * -1)
             {
                 Vector2Int moveBlockCoord = emptyBlock.coord + offset;
 
