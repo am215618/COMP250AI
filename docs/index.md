@@ -24,6 +24,20 @@ A* will always find the shortest route to the goal.
 
 A* does have a complexity problem.
 
+If A* returns a solution, the solution is always going to be optimal.
+"Among all optimal algorithms that start from the same start node and use the same heuristic h, A* expands the minimal number of paths.
+problem: A* could be unlucky about how it breaks ties.
+So let’s define optimal efficiency as expanding the minimal number of paths p for which f(p) =/= f*, where f* is the cost of the shortest path." Search: A* Optimal Efficency, Standford.
+
+LOcal Serarch would be prone to going towards the wrong solutions.
+
+A* is a priority first algorithm, using a priority queue and not using breadth first or depth first. (BFS/DFS)/.
+
+A* has heuristic, whereas Dijkstra on its own doesn't.  A* would never explore extra nodes because it is more focused on the correct path.
+
+If the graph wasen't weighted by the number of tiles that would be misplaced, then BFS would be the best. If they were weighted but did there was no heuristic (in this case, the distance from the root node), then Dijkstra on its own would be better.
+
+
 ### Appropriateness of Practice-Based Research Methods
 Coming soon...
 
@@ -45,8 +59,9 @@ A*:
 ### Reflection
 how the project went
 
-
-
 https://stackoverflow.com/questions/34244452/whats-the-difference-between-best-first-search-and-a-search
 https://ai.stackexchange.com/questions/8902/what-are-the-differences-between-a-and-greedy-best-first-search
 https://www.quora.com/What-are-the-advantages-and-disadvantages-of-A*-search-and-Dijkstras-algorithm-When-should-each-be-used
+https://www.quora.com/What-are-the-advantages-and-disadvantages-of-local-search-compared-to-A*-search
+https://www.quora.com/Why-does-A*-algorithm-outperform-Dijkstra-shortest-path-algorithm
+https://www.quora.com/What-is-the-best-algorithm-for-shortest-path-problems-with-constraints-Dijkstra-BFS-A*
