@@ -13,4 +13,12 @@ public class UI : MonoBehaviour
             puzzleScript.StartShuffle();
         }
     }
+
+    public void Solve()
+    {
+        if (puzzleScript.state == Puzzle.PuzzleState.InPlay)
+        {
+            
+        }
+    }
 }

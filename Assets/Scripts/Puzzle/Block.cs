@@ -11,7 +11,6 @@ public class Block : MonoBehaviour
     Vector2Int startingCoord;
 
     public int id;
-    Solver solver;
 
     public void Init(Vector2Int startingCoord, Texture2D image)
     {
