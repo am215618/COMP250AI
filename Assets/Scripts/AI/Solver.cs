@@ -16,9 +16,13 @@ public class Solver : MonoBehaviour
     [SerializeField]
     int initialHx = 0; //initial number of misplaced tiles.
     public int currentHx = 0;
+    public int lowestHx = 0;
 
     public Vector2Int[] initialPos;
     public Vector2Int[] currentPos;
+
+    public int[] idOrder;
+    public int[] correctidOrder;
 
     public int[] surroundingIDs;
     //history of moves, position class.
@@ -91,13 +95,5 @@ public class Solver : MonoBehaviour
     public void CalculateHx()
     {
 
-        Vector2Int[] offsets = { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1) };
-
-
-        for (int x = 0; x < offsets.Length; x++)
-        {
-            //Vector2 offset = offsets[(blockindex + x) % offsets.Length];
-            //if ()
-        }
     }
 }

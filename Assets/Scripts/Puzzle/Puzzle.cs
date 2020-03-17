@@ -54,6 +54,9 @@ public class Puzzle : MonoBehaviour
         Texture2D[,] imageSlices = ImageSlicer.GetSlices(image, blocksPerLine);
         solver.initialPos = new Vector2Int[(blocksPerLine * blocksPerLine)];
         solver.currentPos = new Vector2Int[(blocksPerLine * blocksPerLine)];
+        solver.idOrder = new int[(blocksPerLine * blocksPerLine)];
+        solver.correctidOrder = new int[(blocksPerLine * blocksPerLine)];
+
         for (int y = 0; y < blocksPerLine; y++)
         {
             for (int x = 0; x < blocksPerLine; x++)
@@ -78,9 +81,12 @@ public class Puzzle : MonoBehaviour
                 {
                     emptyBlock = block;
                     block.id = 0;
+
                 }
                 solver.initialPos[block.id] = block.coord;
                 solver.currentPos[block.id] = block.coord;
+                solver.idOrder[block.id] = block.id;
+                solver.correctidOrder[block.id] = block.id;
             }
         }
 
@@ -107,7 +113,7 @@ public class Puzzle : MonoBehaviour
         }
     }
 
-    void CheckSurroundingBlock()
+    public void CheckSurroundingBlock()
     {
         //Vector2Int nearCoord;
         int nrEmptyBlocks = 0;
@@ -118,27 +124,30 @@ public class Puzzle : MonoBehaviour
                 nrEmptyBlocks++;
                 //nearCoord = solver.currentPos[0];
 
-                for (int i = 0; i < nrEmptyBlocks; i++)
+                /*for (int i = 0; i < nrEmptyBlocks; i++)
                 {
                     //if (i == 0 || )
                     //solver.surroundingIDs[i] = block.id;
-                }
+                }*/
             }
         }
 
         solver.CreateArrays(nrEmptyBlocks);
         for (int s = 0; s < nrEmptyBlocks; s++)
         {
-            MakeNextSolveMove(s);
+            if (!blockIsMoving)
+            {
+                MakeNextSolveMove(s);
+            }
         }
         //Debug.LogWarning(nrEmptyBlocks);
     }
 
-    void MakeNextSolveMove(int blockMoveIndex)
+    public void MakeNextSolveMove(int blockMoveIndex)
     {
         Vector2Int[] offsets = { new Vector2Int(0, 1), new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(-1, 0) };
         Vector2Int[] newCoord = { new Vector2Int(0, 0), new Vector2Int(0, 0), new Vector2Int(0, 0), new Vector2Int(0, 0) };
-        int[] newCoordIDs = new int[3];
+        int[] newCoordIDs = new int[offsets.Length];
         int moveBlockID = 0;
 
         for (int i = 0; i < 3; i++)
@@ -160,49 +169,71 @@ public class Puzzle : MonoBehaviour
 
                 if (moveBlockCoord.x >= 0 && moveBlockCoord.x < blocksPerLine && moveBlockCoord.y >= 0 && moveBlockCoord.y < blocksPerLine)
                 {
-                    //MoveBlock(blocks[moveBlockCoord.x, moveBlockCoord.y], defaultMoveDuration);
                     previousSolveOffset = offset;
-                    //break;
                 }
             }
+
         }
 
         for (int k = 0; k < solver.hx.Length; k++)
         {
             solver.hx[k] = solver.currentHx;
-            for (int j = 0; j < solver.currentPos.Length; j++)
+
+            var blockToMove = offsets[k] + emptyBlock.coord;
+            if (blockToMove.x < 0 || blockToMove.x >= 4 || blockToMove.y < 0 || blockToMove.y >= 4)
             {
-                if (solver.currentPos[j] == newCoord[k])
-                {
-                    newCoordIDs[k] = j;
-                    Debug.LogWarning(newCoordIDs[k]);
-                }
-                else
-                {
-                    newCoordIDs[k] = -1;
-                }
-
-                if (solver.currentPos[j] == solver.initialPos[j] && solver.currentPos[j] - offsets[k] != solver.initialPos[j])
-                {
-                    solver.hx[k] += 1;
-                }
-                else if (solver.currentPos[j] - offsets[k] == solver.initialPos[j])
-                {
-                    solver.hx[k] -= 1;
-                }
-                Debug.LogError(newCoordIDs[k]);
-                //if block's current position - offset = its initial position, decrement hx.
-                //if the block is in the initial position and it moves out of it, then add 1.
+                solver.hx[k] = int.MaxValue;
             }
+            else
+            {
+                for (int j = 0; j < solver.currentPos.Length; j++)
+                {
+                    if (solver.currentPos[j] == newCoord[k])
+                    {
+                        newCoordIDs[k] = j;
+                    }
+                    else
+                    {
+                        newCoordIDs[k] = -1;
+                    }
 
-            int min = solver.hx.Min();
-            int minIndex = Array.IndexOf(solver.hx, min);
-            int blockMoveID = newCoordIDs[minIndex];
-            Debug.Log(blockMoveID);
+                    if (solver.currentPos[j] == solver.initialPos[j] && solver.currentPos[j] - offsets[k] != solver.initialPos[j])
+                    {
+                        solver.hx[k] += 1;
+                    }
+                    else if (solver.currentPos[j] - offsets[k] == solver.initialPos[j])
+                    {
+                        solver.hx[k] -= 1;
+                    }
+                    //Debug.LogError(newCoordIDs[k]);
+                    //if block's current position - offset = its initial position, decrement hx.
+                    //if the block is in the initial position and it moves out of it, then add 1.
+
+                    /*if (solver.currentPos[j] == newCoord[j])
+                    {
+                        newCoordIDs[j] = j;
+                    }*/
+                }
+            }
+            
+            //MakeNextSolveMove();
+            //CheckSurroundingBlock();
         }
 
-        //MoveBlock(newCoordIDs[min])
+        int min = solver.hx.Min();
+        int minIndex = Array.IndexOf(solver.hx, min);
 
+        Vector2Int vectorToMove = offsets[minIndex] + emptyBlock.coord;
+        Block blockToActuallyMove = blocks[vectorToMove.x, vectorToMove.y];
+
+        Debug.LogWarning(blockToActuallyMove.id);
+
+        //Go through each move. Check if it is valid.
+        //if invalid, give it a massive score.
+        MoveBlock(blockToActuallyMove, defaultMoveDuration);
+        //MakeNextPlayerMove();
+        solver.lowestHx = solver.hx[minIndex];
+        //MoveBlock(newCoordIDs[min])
     }
 
     void MoveBlock(Block blockToMove, float duration)
@@ -227,11 +258,11 @@ public class Puzzle : MonoBehaviour
             emptyBlock.transform.position = blockToMove.transform.position;
             blockToMove.MoveToPosition(targetPosition, duration);
             blockIsMoving = true;
-            if (state == PuzzleState.InPlay)
+            /*if (state == PuzzleState.InPlay)
             {
                 CheckSurroundingBlock();
                 solver.piecesMoved.Add(blockToMove.id);
-            }
+            }*/
         }
     }
 

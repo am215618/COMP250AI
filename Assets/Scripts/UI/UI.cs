@@ -18,7 +18,7 @@ public class UI : MonoBehaviour
     {
         if (puzzleScript.state == Puzzle.PuzzleState.InPlay)
         {
-            
+            puzzleScript.CheckSurroundingBlock();
         }
     }
 }
