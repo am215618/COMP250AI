@@ -5,6 +5,7 @@ using UnityEngine;
 public class UI : MonoBehaviour
 {
     public Puzzle puzzleScript;
+    public Solver solverScript;
 
     public void Shuffle()
     {

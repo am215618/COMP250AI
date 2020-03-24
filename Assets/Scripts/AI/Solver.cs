@@ -92,8 +92,24 @@ public class Solver : MonoBehaviour
         */
     }
 
-    public void CalculateHx()
+    void CalculateHx()
     {
 
+    }
+
+    public void StartSolving(int blocks)
+    {
+        CreateArrays(blocks);
+        for (int s = 0; s < blocks; s++)
+        {
+            puzzle.state = Puzzle.PuzzleState.Solving;
+            puzzle.MakeNextSolveMove(s);
+        }
+    }
+
+    public void ResetArrays()
+    {
+        Array.Clear(hx, 0, hx.Length);
+        Array.Clear(fx, 0, fx.Length);
     }
 }
