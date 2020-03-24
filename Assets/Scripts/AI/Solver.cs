@@ -100,11 +100,7 @@ public class Solver : MonoBehaviour
     public void StartSolving(int blocks)
     {
         CreateArrays(blocks);
-        for (int s = 0; s < blocks; s++)
-        {
-            puzzle.state = Puzzle.PuzzleState.Solving;
-            puzzle.MakeNextSolveMove(s);
-        }
+		puzzle.MakeNextSolveMove();
     }
 
     public void ResetArrays()

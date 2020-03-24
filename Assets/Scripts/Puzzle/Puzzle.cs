@@ -140,7 +140,7 @@ public class Puzzle : MonoBehaviour
         //Debug.LogWarning(nrEmptyBlocks);
     }
 
-    public void MakeNextSolveMove(int blockMoveIndex)
+    public void MakeNextSolveMove()
     {
         Vector2Int[] offsets = { new Vector2Int(0, 1), new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(-1, 0) };
         Vector2Int[] newCoord = { new Vector2Int(0, 0), new Vector2Int(0, 0), new Vector2Int(0, 0), new Vector2Int(0, 0) };
@@ -151,7 +151,7 @@ public class Puzzle : MonoBehaviour
         {
             for (int i = 0; i < offsets.Length; i++)
             {
-                Vector2Int offset = offsets[(blockMoveIndex + i) % offsets.Length];
+                Vector2Int offset = offsets[i];
 
                 newCoord[i] = new Vector2Int(emptyBlock.coord.x + offset.x, emptyBlock.coord.y + offset.y);
                 Debug.Log(newCoord[i].x + ", " + newCoord[i].y);
